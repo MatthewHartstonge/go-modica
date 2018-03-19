@@ -35,6 +35,10 @@ type Client struct {
 	// User agent used when communicating with the Modica API.
 	UserAgent string
 
+	// Authentication Details
+	clientID     string
+	clientSecret string
+
 	common service // Reuse a single struct instead of allocating one for each service on the heap.
 
 	// Services used for talking to different parts of the Modica API.
@@ -47,13 +51,19 @@ type service struct {
 
 // NewClient returns a new Modica API client. If a nil httpClient is
 // provided, http.DefaultClient will be used.
-func NewClient(httpClient *http.Client) *Client {
+func NewClient(clientID string, clientSecret string, httpClient *http.Client) *Client {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
 	baseURL, _ := url.Parse(defaultBaseURL)
 
-	c := &Client{client: httpClient, BaseURL: baseURL, UserAgent: userAgent}
+	c := &Client{
+		BaseURL:      baseURL,
+		client:       httpClient,
+		clientID:     clientID,
+		clientSecret: clientSecret,
+		UserAgent:    userAgent,
+	}
 	c.common.client = c
 
 	// Services
@@ -66,7 +76,8 @@ func (c *Client) newRequest(method string, urlPath string, body interface{}) (*h
 	if !strings.HasSuffix(c.BaseURL.Path, "/") {
 		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.BaseURL)
 	}
-	u, err := c.BaseURL.Parse(urlPath)
+
+	uri, err := c.BaseURL.Parse(urlPath)
 	if err != nil {
 		return nil, err
 	}
@@ -80,18 +91,23 @@ func (c *Client) newRequest(method string, urlPath string, body interface{}) (*h
 		}
 	}
 
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := http.NewRequest(method, uri.String(), buf)
 	if err != nil {
 		return nil, err
 	}
 
+	// Configure Headers
+	req.SetBasicAuth(c.clientID, c.clientSecret)
+	req.Header.Set("Accept", mediaTypeV1)
+
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	req.Header.Set("Accept", mediaTypeV1)
+
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
 	}
+
 	return req, nil
 }
 
