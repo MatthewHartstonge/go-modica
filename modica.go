@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -117,6 +118,54 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	err = CheckResponse(resp)
+	if err != nil {
+		// even though there was an error, we still return the response
+		// in case the caller wants to inspect it further
+		return resp, err
+	}
+
 	err = json.NewDecoder(resp.Body).Decode(v)
 	return resp, err
+}
+
+// ErrorResponse reports an error caused by an API request.
+type ErrorResponse struct {
+	Response         *http.Response // HTTP response that caused this error
+	Code             string         `json:"error"`      // error code
+	ErrorDescription string         `json:"error-desc"` // description of the error
+}
+
+func (r *ErrorResponse) Error() string {
+	return fmt.Sprintf("%v %v: %d %v %+v",
+		r.Response.Request.Method, r.Response.Request.URL,
+		r.Response.StatusCode, r.Code, r.ErrorDescription)
+}
+
+// CheckResponse checks the API response for errors, and returns uniform errors if
+// present. A response is considered an error if it has a status code outside
+// the 200 range.
+// API error responses are expected to have either no response
+// body, or a JSON response body that maps to ErrorResponse. Any other
+// response body will be silently ignored.
+func CheckResponse(r *http.Response) error {
+	if code := r.StatusCode; 200 <= code && code <= 299 {
+		return nil
+	}
+
+	errorResponse := &ErrorResponse{Response: r}
+	data, err := ioutil.ReadAll(r.Body)
+	if err == nil && data != nil {
+		json.Unmarshal(data, errorResponse)
+	}
+
+	switch errorResponse.Code {
+	// Return specific Mobile Gateway Error
+	case errCodeSendFailed, errCodeInvalidJson, errCodeMissingAttrib, errCodeInvalidAttrib, errCodeBroadcastLimit, errCode400, errCode422:
+		return mobileGatewayErrorMap[errorResponse.Code]
+	}
+
+	// If we can't match to any documented error codes, return the raw error object.
+	return err
 }

@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	baseMessagePath          = "/messages"
+	baseMessagePath          = "messages"
 	baseBroadcastMessagePath = baseMessagePath + "/broadcast"
 )
 
@@ -14,14 +14,22 @@ const (
 type MobileGatewayService service
 
 // CreateMessage sends an (outbound) message to a single destination.
-func (m MobileGatewayService) CreateMessage(newMessage *Message) (message *Message, err error) {
+func (m MobileGatewayService) CreateMessage(newMessage *Message) (messageID int, err error) {
 	req, err := m.client.newRequest(methodPost, baseMessagePath, newMessage)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	_, err = m.client.do(req, &message)
-	return message, err
+	// Parse the message ID from the response body
+	var resMessageID []int
+	_, err = m.client.do(req, &resMessageID)
+
+	// If a message ID exists, return it.
+	if len(resMessageID) > 0 {
+		return resMessageID[0], err
+	}
+
+	return messageID, ErrMobileGatewayMessageIDNotFound
 }
 
 // GetMessage retrieves a message
