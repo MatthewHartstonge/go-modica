@@ -13,8 +13,8 @@ const (
 	errCode422            = "422"
 )
 
+// Modica Mobile Gateway Errors
 var (
-	// Mobile Gateway Errors
 	// send_failed - Could not queue message due to an unknown error
 	ErrMobileGatewaySendFailed = errors.New("could not queue message due to an unknown error")
 

@@ -154,6 +154,10 @@ func CheckResponse(r *http.Response) error {
 		return nil
 	}
 
+	if r.StatusCode == 404 {
+		return ErrNotFound
+	}
+
 	errorResponse := &ErrorResponse{Response: r}
 	data, err := ioutil.ReadAll(r.Body)
 	if err == nil && data != nil {

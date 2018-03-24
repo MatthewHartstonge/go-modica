@@ -72,3 +72,25 @@ func TestMobileGatewayService_GetMessage(t *testing.T) {
 		t.Errorf("MobileGateway.GetMessage returned %+v, want %+v", got, want)
 	}
 }
+
+func TestMobileGatewayService_GetMessage_NotFound(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc("/messages/321", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		testHeader(t, r, "Authorization", expectedAuthHeader)
+		testHeader(t, r, "Accept", mediaTypeV1)
+
+		w.WriteHeader(404)
+	})
+
+	_, err := client.MobileGateway.GetMessage(321)
+	if err == nil {
+		t.Error("MobileGateway.GetMessage didn't return an error on not found")
+	}
+
+	if err != ErrNotFound {
+		t.Errorf("MobileGateway.GetMessage returned the wrong error: got: %+v, want %+v", err, ErrNotFound)
+	}
+}
