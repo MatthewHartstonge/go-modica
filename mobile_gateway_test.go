@@ -3,8 +3,8 @@ package modica
 import (
 	"fmt"
 	"net/http"
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestMobileGatewayService_CreateMessage(t *testing.T) {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/MatthewHartstonge/go-modica"
 	"fmt"
+	"github.com/MatthewHartstonge/go-modica"
 )
 
 func main() {
