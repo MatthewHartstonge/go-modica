@@ -23,6 +23,9 @@ func (m MobileGatewayService) CreateMessage(newMessage *Message) (messageID int,
 	// Parse the message ID from the response body
 	var resMessageID []int
 	_, err = m.client.do(req, &resMessageID)
+	if err != nil {
+		return 0, err
+	}
 
 	// If a message ID exists, return it.
 	if len(resMessageID) > 0 {

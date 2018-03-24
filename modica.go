@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://api.modicagroup.com/rest/gateway"
+	defaultBaseURL = "https://api.modicagroup.com/rest/gateway/"
 	userAgent      = "go-modica"
 )
 
@@ -31,10 +31,10 @@ type Client struct {
 
 	// Base URL for API requests. Defaults to the public Modica API.
 	// BaseURL should always be specified with a trailing slash.
-	BaseURL *url.URL
+	baseURL *url.URL
 
 	// User agent used when communicating with the Modica API.
-	UserAgent string
+	userAgent string
 
 	// Authentication Details
 	clientID     string
@@ -59,11 +59,11 @@ func NewClient(clientID string, clientSecret string, httpClient *http.Client) *C
 	baseURL, _ := url.Parse(defaultBaseURL)
 
 	c := &Client{
-		BaseURL:      baseURL,
+		baseURL:      baseURL,
 		client:       httpClient,
 		clientID:     clientID,
 		clientSecret: clientSecret,
-		UserAgent:    userAgent,
+		userAgent:    userAgent,
 	}
 	c.common.client = c
 
@@ -74,11 +74,11 @@ func NewClient(clientID string, clientSecret string, httpClient *http.Client) *C
 }
 
 func (c *Client) newRequest(method string, urlPath string, body interface{}) (*http.Request, error) {
-	if !strings.HasSuffix(c.BaseURL.Path, "/") {
-		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.BaseURL)
+	if !strings.HasSuffix(c.baseURL.Path, "/") {
+		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.baseURL)
 	}
 
-	uri, err := c.BaseURL.Parse(urlPath)
+	uri, err := c.baseURL.Parse(urlPath)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +105,8 @@ func (c *Client) newRequest(method string, urlPath string, body interface{}) (*h
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	if c.UserAgent != "" {
-		req.Header.Set("User-Agent", c.UserAgent)
+	if c.userAgent != "" {
+		req.Header.Set("User-Agent", c.userAgent)
 	}
 
 	return req, nil
@@ -154,7 +154,10 @@ func CheckResponse(r *http.Response) error {
 		return nil
 	}
 
-	if r.StatusCode == 404 {
+	switch r.StatusCode {
+	case 401:
+		return ErrUnauthorized
+	case 404:
 		return ErrNotFound
 	}
 

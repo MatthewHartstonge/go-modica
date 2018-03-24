@@ -49,8 +49,8 @@ func setup() (client *Client, mux *http.ServeMux, serverURL string, teardown fun
 
 	// client is the Modica client being tested and is configured to use the test server.
 	client = NewClient(clientID, clientSecret, nil)
-	baseUrl, _ := url.Parse(server.URL + baseURLPath + "/")
-	client.BaseURL = baseUrl
+	baseURL, _ := url.Parse(server.URL + baseURLPath + "/")
+	client.baseURL = baseURL
 
 	return client, mux, server.URL, server.Close
 }
