@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"reflect"
 )
 
 func TestMobileGatewayService_CreateMessage(t *testing.T) {
@@ -30,13 +31,44 @@ func TestMobileGatewayService_CreateMessage(t *testing.T) {
 		Mask:        "",
 		SMSClass:    2,
 	}
-	messageID, err := client.MobileGateway.CreateMessage(payload)
+	got, err := client.MobileGateway.CreateMessage(payload)
 	if err != nil {
 		t.Errorf("MobileGateway.CreateMessage returned error: %v", err)
 	}
 
 	want := 123
-	if messageID != want {
-		t.Errorf("MobileGateway.CreateMessage returned %+v, want %+v", messageID, want)
+	if got != want {
+		t.Errorf("MobileGateway.CreateMessage returned %+v, want %+v", got, want)
+	}
+}
+
+func TestMobileGatewayService_GetMessage(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc("/messages/123", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		testHeader(t, r, "Authorization", expectedAuthHeader)
+		testHeader(t, r, "Accept", mediaTypeV1)
+
+		fmt.Fprint(w, `{"id":123,"destination":"+642123456789","content":"Hi, this is a test message to ensure you are texting correctly","source":"TEST","reference":"alt-reference","operator":"2degrees","reply_to":"123"}`+"\n")
+	})
+
+	got, err := client.MobileGateway.GetMessage(123)
+	if err != nil {
+		t.Errorf("MobileGateway.CreateMessage returned error: %v", err)
+	}
+
+	want := &Message{
+		ID:          123,
+		Destination: "+642123456789",
+		Content:     "Hi, this is a test message to ensure you are texting correctly",
+		Source:      "TEST",
+		Reference:   "alt-reference",
+		ReplyTo:     "123",
+		Operator:    "2degrees",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("MobileGateway.GetMessage returned %+v, want %+v", got, want)
 	}
 }

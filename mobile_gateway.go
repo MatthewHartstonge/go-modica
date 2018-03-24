@@ -60,7 +60,12 @@ type Message struct {
 	// ID contains the message ID
 	ID int `json:"id,omitempty"`
 
-	// Required Attributes
+	/**
+	 * Required Attributes.
+	 * In the simplest implementation, in order to send a message,
+	 * an international formatted number and text content is required.
+	 */
+
 	// Destination contains the destination mobile number the SMS message will be sent to.
 	// Number format must be international format e.g. +64211234567 / +61414123456 / +18123456789.
 	Destination string `json:"destination"`
@@ -68,7 +73,12 @@ type Message struct {
 	// Content contains the text to be sent verbatim to the mobile phone.
 	Content string `json:"content"`
 
-	// Optional Attributes.
+	/**
+	 * Optional Attributes.
+	 * The attributes below aren't required when sending a message,
+	 * but can be configured based on your available account options.
+	 */
+
 	// Source allows you to select the source short code or mobile number where you have multiple available.
 	// This parameter is optional but when it is used it must be used instead of the class parameter.
 	Source string `json:"source,omitempty"`
@@ -90,11 +100,24 @@ type Message struct {
 
 	// SMSClass is unknown, but must be between 1-3.
 	SMSClass int `json:"sms_class,omitempty"`
+
+	/**
+	 * Response Attributes.
+	 * The attributes below are returned from the server only on a get operation.
+	 */
+
+	// ReplyTo contains the message ID to reply to.
+	ReplyTo string `json:"reply_to,omitempty"`
+
+	// Operator contains the name of the operator the number belongs to.
+	Operator string `json:"operator,omitempty"`
 }
 
 // BroadcastMessage provides the data model to unmarshal and marshal multiple messages for Modica's mobile gateway API.
 type BroadcastMessage struct {
-	Destination []string `json:"destination"`
+	// Destinations contains multiple destination mobile numbers the broadcast SMS message will be sent to.
+	// Number format must be international format e.g. +64211234567 / +61414123456 / +18123456789.
+	Destinations []string `json:"destination"`
 
 	Message
 }
