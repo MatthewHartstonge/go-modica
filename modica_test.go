@@ -47,7 +47,8 @@ func setup() (client *Client, mux *http.ServeMux, serverURL string, teardown fun
 	// server is a test HTTP server used to provide mock API responses.
 	server := httptest.NewServer(apiHandler)
 
-	// client is the Modica client being tested and is configured to use the test server.
+	// client is the Modica client being tested and is configured to use the
+	// test server.
 	client = NewClient(clientID, clientSecret, nil)
 	baseURL, _ := url.Parse(server.URL + baseURLPath + "/")
 	client.baseURL = baseURL

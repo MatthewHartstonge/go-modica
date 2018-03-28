@@ -27,7 +27,8 @@ var (
 	// invalid_attrib - Invalid attribute value
 	ErrMobileGatewayInvalidAttribute = errors.New("invalid attribute value")
 
-	// broadcast_limit - Broadcast limit has been exceeded, please consult the error description for more detail.
+	// broadcast_limit - Broadcast limit has been exceeded, please consult the
+	// error description for more detail.
 	ErrMobileGatewayBroadcastLimit = errors.New("broadcast limit has been exceeded")
 
 	// 400 - Invalid scheduled timestamp (must be RFC3339)
@@ -36,7 +37,8 @@ var (
 	// 422 - Invalid scheduled timestamp (must not be in the past)
 	ErrMobileGatewayInvalidTimestamp = errors.New("invalid scheduled timestamp (must not be in the past)")
 
-	// ErrMobileGatewayMessageIDNotFound is returned when a message id is not returned from the API, but the request to create a new message was successful.
+	// ErrMobileGatewayMessageIDNotFound is returned when a message id is not
+	// returned from the API, but the request to create a new message was successful.
 	ErrMobileGatewayMessageIDNotFound = errors.New("message id not found")
 )
 

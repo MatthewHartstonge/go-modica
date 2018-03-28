@@ -40,7 +40,9 @@ type Client struct {
 	clientID     string
 	clientSecret string
 
-	common service // Reuse a single struct instead of allocating one for each service on the heap.
+	// Reuse a single struct instead of allocating one for each service on the
+	// heap.
+	common service
 
 	// Services used for talking to different parts of the Modica API.
 	MobileGateway *MobileGatewayService
@@ -132,9 +134,12 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 
 // ErrorResponse reports an error caused by an API request.
 type ErrorResponse struct {
-	Response         *http.Response // HTTP response that caused this error
-	Code             string         `json:"error"`      // error code
-	ErrorDescription string         `json:"error-desc"` // description of the error
+	// Response contains the HTTP response that caused this error
+	Response *http.Response
+	// Code contains an API error code
+	Code string `json:"error"`
+	// ErrorDescription provides the description of the error
+	ErrorDescription string `json:"error-desc"`
 }
 
 func (r *ErrorResponse) Error() string {
@@ -143,8 +148,8 @@ func (r *ErrorResponse) Error() string {
 		r.Response.StatusCode, r.Code, r.ErrorDescription)
 }
 
-// CheckResponse checks the API response for errors, and returns uniform errors if
-// present. A response is considered an error if it has a status code outside
+// CheckResponse checks the API response for errors, and returns uniform errors
+// if present. A response is considered an error if it has a status code outside
 // the 200 range.
 // API error responses are expected to have either no response
 // body, or a JSON response body that maps to ErrorResponse. Any other
@@ -173,6 +178,7 @@ func CheckResponse(r *http.Response) error {
 		return mobileGatewayErrorMap[errorResponse.Code]
 	}
 
-	// If we can't match to any documented error codes, return the raw error object.
+	// If we can't match to any documented error codes, return the raw error
+	// object.
 	return err
 }
