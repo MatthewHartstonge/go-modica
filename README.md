@@ -66,7 +66,7 @@ Modica API, so contributions are of course always welcome. The calling pattern
 is pretty well established, so adding new methods is relatively straightforward.
 
 ## Versioning ##
-In general, go-modia follows [semver](https://semver.org/) as closely as we can 
+In general, go-modica follows [semver](https://semver.org/) as closely as we can 
 for tagging releases of the package.
 
 * The major version is incremented with any incompatible change to the exported 
