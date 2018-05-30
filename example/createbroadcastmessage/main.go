@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/MatthewHartstonge/go-modica"
+	"github.com/matthewhartstonge/go-modica"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 # go-modica #
-[![Build Status](https://travis-ci.org/MatthewHartstonge/go-modica.svg?branch=master)](https://travis-ci.org/MatthewHartstonge/go-modica)
-[![Go Report Card](https://goreportcard.com/badge/github.com/MatthewHartstonge/go-modica)](https://goreportcard.com/report/github.com/MatthewHartstonge/go-modica)
+[![Build Status](https://travis-ci.org/matthewhartstonge/go-modica.svg?branch=master)](https://travis-ci.org/matthewhartstonge/go-modica)
+[![Go Report Card](https://goreportcard.com/badge/github.com/matthewhartstonge/go-modica)](https://goreportcard.com/report/github.com/matthewhartstonge/go-modica)
 
 go-modica is a Go Client library for accessing [Modicagroup's RESTful APIs.][modica api uri]
 
@@ -11,7 +11,7 @@ go-modica requires Go version 1.8 or greater.
 ## Usage ##
 
 ```go
-import "github.com/MatthewHartstonge/go-modica"
+import "github.com/matthewhartstonge/go-modica"
 ```
 
 Construct a new Modica client, then use the various services on the client to 
@@ -39,7 +39,7 @@ msg, _ := client.MobileGateway.CreateMessage(myCoolNewMessageToSend)
 
 For more sample code snippets, head over to the [example][exampledir] directory.
 
-[exampledir]: https://github.com/MatthewHartstonge/go-modica/tree/master/example
+[exampledir]: https://github.com/matthewhartstonge/go-modica/tree/master/example
 
 ### Authentication ###
 

@@ -1,5 +1,5 @@
 language: go
-go_import_path: github.com/MatthewHartstonge/go-modica
+go_import_path: github.com/matthewhartstonge/go-modica
 go:
   - '1.8'
   - '1.9'
